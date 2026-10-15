@@ -7,3 +7,9 @@ A colab link:
 https://colab.research.google.com/drive/11C_qHj1nmwZERnPGjCcyAja7lb8S1dBi#scrollTo=uoPcUjtRXELc
 
 Ha nem működne a link egy fájlba is feltöltöttem külön.
+
+A programot kiegészítettem:
+- Delete command
+- Count(*)
+- ID-k ne tudjanak megduplázódni
+- Update
