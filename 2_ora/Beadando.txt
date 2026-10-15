@@ -1,0 +1,181 @@
+import re
+
+# RAM-ban tárolt adatbázis (listában tároljuk a rekordokat szótárként)
+users_table = [
+    {"id": 1, "nev": "Nagy Anna"},
+    {"id": 2, "nev": "Kovács Béla"}
+]
+
+def execute_query(query):
+    query = query.strip().strip(";")  # Felesleges szóközök és pontosvessző lefedése
+
+    # --- 1. INSERT INTO feldolgozása ---
+    # Minta pl: INSERT INTO users (id, nev) VALUES (12, 'Kis Pista')
+    insert_pattern = r"^INSERT\s+INTO\s+(\w+)\s*\((.*?)\)\s*VALUES\s*\((.*?)\)$"
+    match_insert = re.match(insert_pattern, query, re.IGNORECASE)
+
+    if match_insert:
+        table_name, columns_str, values_str = match_insert.groups()
+
+        if table_name.lower() != "users":
+            print(f"Hiba: A '{table_name}' tábla nem létezik!")
+            return
+
+        # Oszlopnevek kinyerése
+        columns = [col.strip() for col in columns_str.split(",")]
+
+        # Értékek kinyerése (eltávolítjuk az idézőjeleket)
+        values = []
+        for val in values_str.split(","):
+            val = val.strip().strip("'\"")
+            # Ha szám, konvertáljuk integerre
+            if val.isdigit():
+                val = int(val)
+            values.append(val)
+
+        if len(columns) != len(values):
+            print("Hiba: Az oszlopok és az értékek száma nem egyezik!")
+            return
+
+        # Rekord felépítése szótárként és hozzáadása a RAM listához
+        new_record = dict(zip(columns, values))
+#itt is kiegeszítettem:
+#id-k nem tudnak megduplazodni
+
+        if any(row.get("id") == new_record.get("id") for row in users_table):
+            print(f"Hiba: Az id={new_record.get('id')} már létezik az adatbázisban!")
+            return
+#kiegeszites vege
+
+        users_table.append(new_record)
+        print(f"Sikeres beszúrás: {new_record}")
+        return
+
+    # --- 2. SELECT feldolgozása ---
+    # Minta pl: SELECT id, nev FROM users
+    select_pattern = r"^SELECT\s+(.*?)\s+FROM\s+(\w+)$"
+    match_select = re.match(select_pattern, query, re.IGNORECASE)
+
+    if match_select:
+        columns_str, table_name = match_select.groups()
+
+        if table_name.lower() != "users":
+            print(f"Hiba: A '{table_name}' tábla nem létezik!")
+            return
+
+      #count al valo kiegeszites     
+        if columns_str.upper().strip() == "COUNT(*)":
+            print("\n--- Eredmény ---")
+            print(f"COUNT(*): {len(users_table)}")
+            print("----------------\n")
+            return
+        # Select Count(*) from users
+
+
+        requested_cols = [col.strip() for col in columns_str.split(",")]
+
+        print("\n--- Eredmény ---")
+        for row in users_table:
+            # Ha '*' van megadva, minden mezőt kiírunk
+            if requested_cols == ["*"]:
+                result = row
+            else:
+                # Csak a kért mezőket válogatjuk ki
+                result = {col: row.get(col) for col in requested_cols if col in row}
+
+            print(result)
+        print("----------------\n")
+        return
+
+#Ki egeszitesek
+
+#DELETE kiegeszites:
+
+    delete_pattern = r"^DELETE\s+FROM\s+(\w+)\s+WHERE\s+(\w+)\s*=\s*(.*)$"
+    match_delete = re.match(delete_pattern, query, re.IGNORECASE)
+
+    if match_delete:
+        table_name, col_name, target_val = match_delete.groups()
+
+        if table_name.lower() != "users":
+            print(f"Hiba: A '{table_name}' tábla nem létezik!")
+            return
+
+        col_name = col_name.strip()
+        target_val = target_val.strip().strip("'\"")
+        
+        # Ha számot adtunk meg (pl. id = 3), átalakítjuk int típusra
+        if target_val.isdigit():
+            target_val = int(target_val)
+
+        # Megkeressük és töröljük a rekordot a táblából
+        torolve = False
+        for row in list(users_table):
+            if row.get(col_name) == target_val:
+                users_table.remove(row)
+                torolve = True
+
+        if torolve:
+            print(f"Sikeresen törölve a rekord: {col_name} = {target_val}")
+        else:
+            print(f"Nem található rekord ezzel a feltétellel: {col_name} = {target_val}")
+        return
+  
+  #delete from users mukodik id-re es nevre is
+
+#update:
+
+    update_pattern = r"^UPDATE\s+(\w+)\s+SET\s+(\w+)\s*=\s*(.*?)\s+WHERE\s+(\w+)\s*=\s*(.*)$"
+    match_update = re.match(update_pattern, query, re.IGNORECASE)
+
+    if match_update:
+        table_name, set_col, set_val, where_col, where_val = match_update.groups()
+
+        if table_name.lower() != "users":
+            print(f"Hiba: A '{table_name}' tábla nem létezik!")
+            return
+
+        set_col = set_col.strip()
+        set_val = set_val.strip().strip("'\"")
+        if set_val.isdigit():
+            set_val = int(set_val)
+
+        where_col = where_col.strip()
+        where_val = where_val.strip().strip("'\"")
+        if where_val.isdigit():
+            where_val = int(where_val)
+
+        modositva = 0
+        for row in users_table:
+            if row.get(where_col) == where_val:
+                row[set_col] = set_val
+                modositva += 1
+
+        if modositva > 0:
+            print(f"Sikeres módosítás! Frissített rekordok száma: {modositva}")
+        else:
+            print(f"Nem található rekord ezzel a feltétellel: {where_col} = {where_val}")
+        return
+#vege
+
+    print("Hiba: Ismeretlen vagy hibás szintaxisú parancs!")
+
+
+
+
+# --- Konzol hurok (REPL) ---
+print("Egyszerű In-Memory SQL Adatbázis")
+print("Használható parancsok példái:")
+print("  SELECT id, nev FROM users")
+print("  INSERT INTO users (id, nev) VALUES (12, 'Kis Pista')")
+print("  exit\n")
+
+while True:
+    try:
+        user_input = input("SQL> ")
+        if user_input.lower().strip() in ["exit", "quit"]:
+            break
+        if user_input.strip():
+            execute_query(user_input)
+    except Exception as e:
+        print(f"Váratlan hiba: {e}")
