@@ -1,0 +1,26 @@
+group: tanfolyam_db
+
+tanfolyam = {
+tkod:number, ar:number, tipus:string, megnevezes:string
+1, 45000, 'Alap', 'Python programozás'
+2, 60000, 'Haladó', 'Webfejlesztés'
+3, 35000, 'Alap', 'Adatbázis-kezelés'
+4, 95000, 'Alap', 'Adatbázis-kezelés2'
+}
+
+resztvevo = {
+tajszam:string, nev:string, lakcim:string
+'123456789', 'Kovács Anna', 'Budapest'
+'987654321', 'Nagy Péter', 'Miskolc'
+'456123789', 'Szabó Éva', 'Debrecen'
+}
+
+befizetes = {
+diak:string, kurzus:number, befizetes:number
+'123456789', 1, 45000
+'987654321', 2, 60000
+'456123789', 3, 35000
+}
+
+
+GitHubra 11-ig a lekérdezéseket ezzel kapcsolatba

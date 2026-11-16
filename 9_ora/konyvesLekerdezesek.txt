@@ -1,0 +1,23 @@
+Könyves tábla lekérdezések: 4,5,6 (5,6 LEHET)
+
+1. πkonyv.cim,konyv.ar(σ mufaj = 'Horror'(konyv))
+
+2. π konyv.cim, szerzo.nev (konyv ⨝ konyv.szerzo = szerzo.szkod szerzo)
+
+3. π konyv.cim (konyv ⨝ konyv.szerzo = szerzo.szkod (σ szerzo.nemzetiseg = 'brit' (szerzo)))
+
+4. γ COUNT(konyv.kkod) (σ konyv.mufaj = 'Fantasy' (konyv))
+
+5. π konyv.cim, konyv.ar (konyv ⨝ konyv.ar = min_ar (γ MIN(konyv.ar)→min_ar (konyv)))
+
+6. konyv ⨝ konyv.ar = max_ar (γ MAX(konyv.ar)→max_ar (konyv))
+
+7. π konyv.cim, szerzo.nev (σ konyv.ar > 2000 (konyv ⨝ konyv.szerzo = szerzo.szkod szerzo))
+
+8. γ konyv.mufaj, AVG(konyv.ar) (konyv)
+
+9. γ szerzo.nev, SUM(konyv.ar) (konyv ⨝ konyv.szerzo = szerzo.szkod szerzo)
+
+10. π konyv.cim (konyv ⨝ konyv.ar > avg_ar (γ AVG(konyv.ar)→avg_ar (konyv)))
+
+11. γ szerzo.nev, COUNT(konyv.kkod) (konyv ⨝ konyv.szerzo = szerzo.szkod szerzo)
