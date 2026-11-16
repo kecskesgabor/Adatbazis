@@ -1,0 +1,16 @@
+Create table Auto ( rendszam Char( 7 ) Primary Key not null,
+marka varchar(50) not null,
+tipus varchar(50) not null,
+napi_dij int (napi_dij > 0)
+);
+
+Create table  Ugyfel ( ugyfel_id Int primary key,
+nev varchar(80) not null,
+telefon char(20),
+email varchar(100) Unique not null
+);
+
+Create table Kolcsonzes (kolcsonzes_id int Primary Key,
+Foreign Key auto_rendszam char(7) references Auto(rendszam),
+Forqign key ugyfel_id int references Ugyfel(ugyfel_id),
+napok_szama int not null check (napok_szama > 0) );

@@ -1,0 +1,16 @@
+Tanfolyam tábla:
+
+Create table Tanfolyam (
+tkod Int primary key,
+megnevezes varchar2(100) not null,
+tipus varchar2(30),
+ar int check (ar>0) );
+
+Create table resztvevo ( tajszam char(13) primary key,
+nev carchar2(80) not null,
+lakcim varchar2(150) );
+
+Create table Befizetes ( befizetes_id Int primary key,
+tkod int not null references tanfolyam(tkod),
+diak_id char(13) not null references resztvevo(tajszam),
+oszseg int check (osszeg > 0) );
